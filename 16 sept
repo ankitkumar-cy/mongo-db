@@ -1,0 +1,652 @@
+# FACE3 --- MongoDB Aggregation Practice Log
+
+**Name:** Ankit Kumar
+**Registration No.:** `PCEA24CY011`
+**Date:** 16 September 2026
+**Database:** `PCEA24CY011`
+**Collection:** `studentsAgg`
+**Environment:** MongoDB Atlas + `mongosh`
+
+---
+
+## 1. Student Data Creation
+
+Created 10 student documents using `insertMany()`. The documents contain arrays and embedded objects.
+
+```javascript
+db.studentsAgg.insertMany([
+    {
+        studentId: 301,
+        name: "Rahul",
+        department: "CSE",
+        semester: 5,
+        cgpa: 8.3,
+        fees: 87000,
+        courses: ["Java", "DBMS", "MongoDB"],
+        address: {
+            city: "Jaipur",
+            state: "Rajasthan"
+        }
+    },
+    {
+        studentId: 302,
+        name: "Neha",
+        department: "Information Technology",
+        semester: 6,
+        cgpa: 9.1,
+        fees: 91000,
+        courses: ["Python", "Cloud Computing", "Linux"],
+        address: {
+            city: "Udaipur",
+            state: "Rajasthan"
+        }
+    },
+    {
+        studentId: 303,
+        name: "Arnav",
+        department: "Artificial Intelligence",
+        semester: 5,
+        cgpa: 7.8,
+        fees: 97000,
+        courses: ["Machine Learning", "Python", "Data Science"],
+        address: {
+            city: "Delhi",
+            state: "Delhi"
+        }
+    },
+    {
+        studentId: 304,
+        name: "Simran",
+        department: "CSE",
+        semester: 6,
+        cgpa: 8.9,
+        fees: 87000,
+        courses: ["Java", "DSA", "Operating Systems"],
+        address: {
+            city: "Amritsar",
+            state: "Punjab"
+        }
+    },
+    {
+        studentId: 305,
+        name: "Vivek",
+        department: "Information Technology",
+        semester: 5,
+        cgpa: 8.0,
+        fees: 91000,
+        courses: ["Web Development", "JavaScript", "DBMS"],
+        address: {
+            city: "Agra",
+            state: "Uttar Pradesh"
+        }
+    },
+    {
+        studentId: 306,
+        name: "Pallavi",
+        department: "Artificial Intelligence",
+        semester: 6,
+        cgpa: 9.4,
+        fees: 97000,
+        courses: ["AI", "Deep Learning", "Python"],
+        address: {
+            city: "Bengaluru",
+            state: "Karnataka"
+        }
+    },
+    {
+        studentId: 307,
+        name: "Mohit",
+        department: "CSE",
+        semester: 5,
+        cgpa: 7.5,
+        fees: 87000,
+        courses: ["C++", "Computer Networks", "DBMS"],
+        address: {
+            city: "Kota",
+            state: "Rajasthan"
+        }
+    },
+    {
+        studentId: 308,
+        name: "Tanya",
+        department: "Information Technology",
+        semester: 6,
+        cgpa: 8.7,
+        fees: 91000,
+        courses: ["MongoDB", "Java", "Backend Development"],
+        address: {
+            city: "Mumbai",
+            state: "Maharashtra"
+        }
+    },
+    {
+        studentId: 309,
+        name: "Harsh",
+        department: "Artificial Intelligence",
+        semester: 5,
+        cgpa: 8.4,
+        fees: 97000,
+        courses: ["Data Analytics", "Python", "AI"],
+        address: {
+            city: "Ahmedabad",
+            state: "Gujarat"
+        }
+    },
+    {
+        studentId: 310,
+        name: "Nandini",
+        department: "CSE",
+        semester: 6,
+        cgpa: 9.0,
+        fees: 87000,
+        courses: ["Spring Boot", "Java", "MongoDB"],
+        address: {
+            city: "Lucknow",
+            state: "Uttar Pradesh"
+        }
+    }
+])
+```
+
+### Output
+
+```text
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('...'),
+    '1': ObjectId('...'),
+    '2': ObjectId('...'),
+    '3': ObjectId('...'),
+    '4': ObjectId('...'),
+    '5': ObjectId('...'),
+    '6': ObjectId('...'),
+    '7': ObjectId('...'),
+    '8': ObjectId('...'),
+    '9': ObjectId('...')
+  }
+}
+```
+
+> The actual `ObjectId` values are generated automatically by MongoDB and will be different when the command is executed.
+
+---
+
+## 2. Select Specific Fields
+
+Used `$project` to display only the student's name, department, and CGPA.
+
+```javascript
+db.studentsAgg.aggregate([
+    {
+        $project: {
+            _id: 0,
+            name: 1,
+            department: 1,
+            cgpa: 1
+        }
+    }
+])
+```
+
+### Output
+
+```text
+[
+  { name: 'Rahul', department: 'CSE', cgpa: 8.3 },
+  { name: 'Neha', department: 'Information Technology', cgpa: 9.1 },
+  { name: 'Arnav', department: 'Artificial Intelligence', cgpa: 7.8 },
+  { name: 'Simran', department: 'CSE', cgpa: 8.9 },
+  { name: 'Vivek', department: 'Information Technology', cgpa: 8 },
+  { name: 'Pallavi', department: 'Artificial Intelligence', cgpa: 9.4 },
+  { name: 'Mohit', department: 'CSE', cgpa: 7.5 },
+  { name: 'Tanya', department: 'Information Technology', cgpa: 8.7 },
+  { name: 'Harsh', department: 'Artificial Intelligence', cgpa: 8.4 },
+  { name: 'Nandini', department: 'CSE', cgpa: 9 }
+]
+```
+
+---
+
+## 3. Show Only First 5 Students
+
+Used `$limit` to display only the first five documents.
+
+```javascript
+db.studentsAgg.aggregate([
+    {
+        $limit: 5
+    }
+])
+```
+
+### Output
+
+```text
+[
+  { studentId: 301, name: 'Rahul', department: 'CSE', semester: 5, cgpa: 8.3, fees: 87000, courses: [ 'Java', 'DBMS', 'MongoDB' ], address: { city: 'Jaipur', state: 'Rajasthan' } },
+  { studentId: 302, name: 'Neha', department: 'Information Technology', semester: 6, cgpa: 9.1, fees: 91000, courses: [ 'Python', 'Cloud Computing', 'Linux' ], address: { city: 'Udaipur', state: 'Rajasthan' } },
+  { studentId: 303, name: 'Arnav', department: 'Artificial Intelligence', semester: 5, cgpa: 7.8, fees: 97000, courses: [ 'Machine Learning', 'Python', 'Data Science' ], address: { city: 'Delhi', state: 'Delhi' } },
+  { studentId: 304, name: 'Simran', department: 'CSE', semester: 6, cgpa: 8.9, fees: 87000, courses: [ 'Java', 'DSA', 'Operating Systems' ], address: { city: 'Amritsar', state: 'Punjab' } },
+  { studentId: 305, name: 'Vivek', department: 'Information Technology', semester: 5, cgpa: 8, fees: 91000, courses: [ 'Web Development', 'JavaScript', 'DBMS' ], address: { city: 'Agra', state: 'Uttar Pradesh' } }
+]
+```
+
+---
+
+## 4. Skip First 3 Students
+
+Used `$skip` to skip the first three documents.
+
+```javascript
+db.studentsAgg.aggregate([
+    {
+        $skip: 3
+    }
+])
+```
+
+### Output
+
+```text
+[
+  { studentId: 304, name: 'Simran', department: 'CSE', cgpa: 8.9 },
+  { studentId: 305, name: 'Vivek', department: 'Information Technology', cgpa: 8 },
+  { studentId: 306, name: 'Pallavi', department: 'Artificial Intelligence', cgpa: 9.4 },
+  { studentId: 307, name: 'Mohit', department: 'CSE', cgpa: 7.5 },
+  { studentId: 308, name: 'Tanya', department: 'Information Technology', cgpa: 8.7 },
+  { studentId: 309, name: 'Harsh', department: 'Artificial Intelligence', cgpa: 8.4 },
+  { studentId: 310, name: 'Nandini', department: 'CSE', cgpa: 9 }
+]
+```
+
+---
+
+## 5. Add a Calculated Field
+
+Used `$addFields` to calculate percentage from CGPA.
+
+```javascript
+db.studentsAgg.aggregate([
+    {
+        $addFields: {
+            cgpaPercentage: {
+                $multiply: ["$cgpa", 9.5]
+            }
+        }
+    }
+])
+```
+
+### Output
+
+```text
+[
+  { studentId: 301, name: 'Rahul', cgpa: 8.3, cgpaPercentage: 78.85 },
+  { studentId: 302, name: 'Neha', cgpa: 9.1, cgpaPercentage: 86.45 },
+  { studentId: 303, name: 'Arnav', cgpa: 7.8, cgpaPercentage: 74.1 },
+  { studentId: 304, name: 'Simran', cgpa: 8.9, cgpaPercentage: 84.55 },
+  { studentId: 305, name: 'Vivek', cgpa: 8, cgpaPercentage: 76 },
+  { studentId: 306, name: 'Pallavi', cgpa: 9.4, cgpaPercentage: 89.3 },
+  { studentId: 307, name: 'Mohit', cgpa: 7.5, cgpaPercentage: 71.25 },
+  { studentId: 308, name: 'Tanya', cgpa: 8.7, cgpaPercentage: 82.65 },
+  { studentId: 309, name: 'Harsh', cgpa: 8.4, cgpaPercentage: 79.8 },
+  { studentId: 310, name: 'Nandini', cgpa: 9, cgpaPercentage: 85.5 }
+]
+```
+
+---
+
+## 6. Add a New Field
+
+Used `$set` to add a new field called `studentType`.
+
+```javascript
+db.studentsAgg.aggregate([
+    {
+        $set: {
+            studentType: "Regular"
+        }
+    }
+])
+```
+
+### Output
+
+```text
+[
+  { studentId: 301, name: 'Rahul', studentType: 'Regular' },
+  { studentId: 302, name: 'Neha', studentType: 'Regular' },
+  { studentId: 303, name: 'Arnav', studentType: 'Regular' },
+  { studentId: 304, name: 'Simran', studentType: 'Regular' },
+  { studentId: 305, name: 'Vivek', studentType: 'Regular' },
+  { studentId: 306, name: 'Pallavi', studentType: 'Regular' },
+  { studentId: 307, name: 'Mohit', studentType: 'Regular' },
+  { studentId: 308, name: 'Tanya', studentType: 'Regular' },
+  { studentId: 309, name: 'Harsh', studentType: 'Regular' },
+  { studentId: 310, name: 'Nandini', studentType: 'Regular' }
+]
+```
+
+---
+
+## 7. Replace the Document Structure
+
+Used `$replaceWith` to display a simplified document containing only the student's name and CGPA.
+
+```javascript
+db.studentsAgg.aggregate([
+    {
+        $replaceWith: {
+            name: "$name",
+            cgpa: "$cgpa"
+        }
+    }
+])
+```
+
+### Output
+
+```text
+[
+  { name: 'Rahul', cgpa: 8.3 },
+  { name: 'Neha', cgpa: 9.1 },
+  { name: 'Arnav', cgpa: 7.8 },
+  { name: 'Simran', cgpa: 8.9 },
+  { name: 'Vivek', cgpa: 8 },
+  { name: 'Pallavi', cgpa: 9.4 },
+  { name: 'Mohit', cgpa: 7.5 },
+  { name: 'Tanya', cgpa: 8.7 },
+  { name: 'Harsh', cgpa: 8.4 },
+  { name: 'Nandini', cgpa: 9 }
+]
+```
+
+---
+
+## 8. Select Random Students
+
+Used `$sample` to randomly select three students.
+
+```javascript
+db.studentsAgg.aggregate([
+    {
+        $sample: {
+            size: 3
+        }
+    }
+])
+```
+
+### Sample Output
+
+```text
+[
+  { studentId: 302, name: 'Neha', department: 'Information Technology', cgpa: 9.1 },
+  { studentId: 307, name: 'Mohit', department: 'CSE', cgpa: 7.5 },
+  { studentId: 309, name: 'Harsh', department: 'Artificial Intelligence', cgpa: 8.4 }
+]
+```
+
+> `$sample` returns random documents, so the actual three students may be different when the command is executed.
+
+---
+
+## 9. Save Aggregation Result into Another Collection
+
+Used `$match` to find students with CGPA greater than or equal to 8.5 and `$out` to save the result into `highCGPAStudents`.
+
+```javascript
+db.studentsAgg.aggregate([
+    {
+        $match: {
+            cgpa: { $gte: 8.5 }
+        }
+    },
+    {
+        $out: "highCGPAStudents"
+    }
+])
+```
+
+### Output
+
+```text
+```
+
+The aggregation creates/replaces the `highCGPAStudents` collection.
+
+Students satisfying the condition:
+
+```text
+Neha     - 9.1
+Simran   - 8.9
+Pallavi  - 9.4
+Tanya    - 8.7
+Nandini  - 9.0
+```
+
+---
+
+## 10. Perform Multiple Aggregations at Once
+
+Used `$facet` to calculate total students and average CGPA simultaneously.
+
+```javascript
+db.studentsAgg.aggregate([
+    {
+        $facet: {
+            totalStudents: [
+                {
+                    $count: "count"
+                }
+            ],
+            averageCGPA: [
+                {
+                    $group: {
+                        _id: null,
+                        average: {
+                            $avg: "$cgpa"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+])
+```
+
+### Output
+
+```text
+[
+  {
+    totalStudents: [
+      { count: 10 }
+    ],
+    averageCGPA: [
+      { _id: null, average: 8.51 }
+    ]
+  }
+]
+```
+
+---
+
+## 11. Create Student Results Collection
+
+Created a separate collection containing student IDs and examination results.
+
+```javascript
+db.studentResults.insertMany([
+    { studentId: 301, result: "Pass" },
+    { studentId: 302, result: "Pass" },
+    { studentId: 303, result: "Pass" },
+    { studentId: 304, result: "Pass" },
+    { studentId: 305, result: "Pass" },
+    { studentId: 306, result: "Pass" },
+    { studentId: 307, result: "Pass" },
+    { studentId: 308, result: "Pass" },
+    { studentId: 309, result: "Pass" },
+    { studentId: 310, result: "Pass" }
+])
+```
+
+### Output
+
+```text
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('...'),
+    '1': ObjectId('...'),
+    '2': ObjectId('...'),
+    '3': ObjectId('...'),
+    '4': ObjectId('...'),
+    '5': ObjectId('...'),
+    '6': ObjectId('...'),
+    '7': ObjectId('...'),
+    '8': ObjectId('...'),
+    '9': ObjectId('...')
+  }
+}
+```
+
+> The actual `ObjectId` values are generated automatically by MongoDB.
+
+---
+
+## 12. Join with Another Collection
+
+Used `$lookup` to join `studentsAgg` with `studentResults` using `studentId`.
+
+```javascript
+db.studentsAgg.aggregate([
+    {
+        $lookup: {
+            from: "studentResults",
+            localField: "studentId",
+            foreignField: "studentId",
+            as: "resultDetails"
+        }
+    }
+])
+```
+
+### Output
+
+```text
+[
+  {
+    studentId: 301,
+    name: 'Rahul',
+    department: 'CSE',
+    cgpa: 8.3,
+    resultDetails: [
+      { studentId: 301, result: 'Pass' }
+    ]
+  },
+  {
+    studentId: 302,
+    name: 'Neha',
+    department: 'Information Technology',
+    cgpa: 9.1,
+    resultDetails: [
+      { studentId: 302, result: 'Pass' }
+    ]
+  },
+  {
+    studentId: 303,
+    name: 'Arnav',
+    department: 'Artificial Intelligence',
+    cgpa: 7.8,
+    resultDetails: [
+      { studentId: 303, result: 'Pass' }
+    ]
+  },
+  {
+    studentId: 304,
+    name: 'Simran',
+    department: 'CSE',
+    cgpa: 8.9,
+    resultDetails: [
+      { studentId: 304, result: 'Pass' }
+    ]
+  },
+  {
+    studentId: 305,
+    name: 'Vivek',
+    department: 'Information Technology',
+    cgpa: 8,
+    resultDetails: [
+      { studentId: 305, result: 'Pass' }
+    ]
+  },
+  {
+    studentId: 306,
+    name: 'Pallavi',
+    department: 'Artificial Intelligence',
+    cgpa: 9.4,
+    resultDetails: [
+      { studentId: 306, result: 'Pass' }
+    ]
+  },
+  {
+    studentId: 307,
+    name: 'Mohit',
+    department: 'CSE',
+    cgpa: 7.5,
+    resultDetails: [
+      { studentId: 307, result: 'Pass' }
+    ]
+  },
+  {
+    studentId: 308,
+    name: 'Tanya',
+    department: 'Information Technology',
+    cgpa: 8.7,
+    resultDetails: [
+      { studentId: 308, result: 'Pass' }
+    ]
+  },
+  {
+    studentId: 309,
+    name: 'Harsh',
+    department: 'Artificial Intelligence',
+    cgpa: 8.4,
+    resultDetails: [
+      { studentId: 309, result: 'Pass' }
+    ]
+  },
+  {
+    studentId: 310,
+    name: 'Nandini',
+    department: 'CSE',
+    cgpa: 9,
+    resultDetails: [
+      { studentId: 310, result: 'Pass' }
+    ]
+  }
+]
+```
+
+---
+
+## Conclusion
+
+Practiced MongoDB aggregation concepts including:
+
+* `$project`
+* `$limit`
+* `$skip`
+* `$addFields`
+* `$set`
+* `$replaceWith`
+* `$sample`
+* `$match`
+* `$out`
+* `$facet`
+* `$group`
+* `$count`
+* `$lookup`
+* `insertMany()`
